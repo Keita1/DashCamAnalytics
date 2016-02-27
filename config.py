@@ -1,0 +1,1 @@
+BUCKETNAME = "aub3cardata"
