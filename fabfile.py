@@ -1,9 +1,15 @@
-import os
-from fabric.api import task
+import os,logging
+from fabric.api import task,local,run
 import boto,time
 from boto.s3.key import Key
-
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='logs/fab.log',
+                    filemode='a')
 import config
+from config import USER,private_key,HOST
+
 s3_connection = boto.connect_s3()
 
 @task
@@ -23,3 +29,12 @@ def get_frames():
 
 
 
+@task
+def server(rlocal=False):
+    """
+    start server
+    """
+    if rlocal:
+        local('python server.py')
+    else:
+        run('python server.py')
