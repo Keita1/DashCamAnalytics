@@ -31,7 +31,7 @@ def get_frames():
             command = 'ffmpeg -accurate_seek -ss {} -i {}temp.mp4   -frames:v 1 temp/{}.{}.png'.format(60.0*i,TEMP_DIR,name,i)
             print command
             os.system(command)
-    os.system('cd temp;aws s3 mv . s3://aub3cardata/frames/dataset/ --recursive --storage-class "REDUCED_REDUNDANCY"')
+        os.system('cd temp;aws s3 mv . s3://{}/frames/dataset/ --recursive --storage-class "REDUCED_REDUNDANCY"'.format(config.BUCKETNAME))
 
 @task
 def server(rlocal=False):
