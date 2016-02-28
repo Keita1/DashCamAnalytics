@@ -23,12 +23,13 @@ def get_frames():
     for i,v in enumerate(videos):
         key = bucket.get_key(v)
         name = v.split("/")[-1].split(".")[0]
-        url = key.generate_url(expires_in=600)
+        # url = key.generate_url(expires_in=600)
         with open("{}/temp.mp4".format(TEMP_DIR),'w') as fh:
-            key.get_contents_to_file(fh,headers={'Range' : 'bytes=0-10240'})
-        command = 'for i in {0..39}'+' ; do ffmpeg -accurate_seek -ss `echo $i*60.0 | bc` -i {}/temp.mp4   -frames:v 1 temp/{}.$i.png ; done'.format(TEMP_DIR,name)
-        print command
-        os.system(command)
+            key.get_contents_to_file(fh,headers={'Range' : 'bytes=0-100240'})
+        for i in range(30):
+            command = 'ffmpeg -accurate_seek -ss {} -i {}/temp.mp4   -frames:v 1 temp/{}.{}.png'.format(60.0*i,TEMP_DIR,name,i)
+            print command
+            os.system(command)
 
 
 
