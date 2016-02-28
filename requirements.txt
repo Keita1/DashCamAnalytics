@@ -6,8 +6,6 @@ anyjson==0.3.3
 appdirs==1.4.0
 autobahn==0.10.9
 Babel==1.3
-backports==1.0
-backports.ssl-match-hostname==3.4.0.2
 billiard==3.3.0.20
 bitarray==0.8.1
 blinker==1.4
@@ -16,7 +14,6 @@ boto3==1.1.1
 botocore==1.1.5
 celery==3.1.18
 certifi==2015.4.28
-commoncrawllib==0.1
 Cython==0.22
 decorator==4.0.2
 docutils==0.12
