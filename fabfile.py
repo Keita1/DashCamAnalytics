@@ -25,11 +25,13 @@ def get_frames():
         name = v.split("/")[-1].split(".")[0]
         # url = key.generate_url(expires_in=600)
         with open("{}/temp.mp4".format(TEMP_DIR),'w') as fh:
-            key.get_contents_to_file(fh,headers={'Range' : 'bytes=0-100240'})
+            key.get_contents_to_file(fh) # ,headers={'Range' : 'bytes=0-100240'}
         for i in range(30):
-            command = 'ffmpeg -accurate_seek -ss {} -i {}/temp.mp4   -frames:v 1 temp/{}.{}.png'.format(60.0*i,TEMP_DIR,name,i)
+            command = 'ffmpeg -accurate_seek -ss {} -i {}temp.mp4   -frames:v 1 temp/{}.{}.png'.format(60.0*i,TEMP_DIR,name,i)
             print command
             os.system(command)
+            break
+        break
 
 
 

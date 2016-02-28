@@ -9,4 +9,4 @@ AWS = sys.platform != 'darwin'
 if AWS:
     TEMP_DIR = "/tmp/"
 else:
-    TEMP_DIR = "/Users/aub3/temp"
+    TEMP_DIR = "/Users/aub3/temp/"
