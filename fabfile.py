@@ -26,7 +26,7 @@ def get_frames():
         url = key.generate_url(expires_in=600)
         with open("{}/temp.mp4".format(TEMP_DIR),'w') as fh:
             key.get_contents_to_file(fh,headers={'Range' : 'bytes=0-10240'})
-        command = '"for i in \{0..39\} ; do ffmpeg -accurate_seek -ss `echo $i*60.0 | bc` -i {}/temp.mp4   -frames:v 1 temp/{}/$i.png ; done"'.format(TEMP_DIR,name)
+        command = 'for i in \{0..39\}'+' ; do ffmpeg -accurate_seek -ss `echo $i*60.0 | bc` -i {}/temp.mp4   -frames:v 1 temp/{}/$i.png ; done'.format(TEMP_DIR,name)
         print command
         os.system(command)
 
