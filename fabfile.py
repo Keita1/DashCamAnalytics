@@ -19,7 +19,7 @@ s3_connection = boto.connect_s3()
 @task
 def get_frames():
     bucket = s3_connection.get_bucket(config.BUCKETNAME)
-    videos = [line.strip().split(" ")[-1] for line in file("lib/videos.txt") if line.strip().endswith(".mp4")]
+    videos = [line.strip().split(" ")[-1] for line in file("dashcamlib/videos.txt") if line.strip().endswith(".mp4")]
     for i,v in enumerate(videos):
         key = bucket.get_key(v)
         name = v.split("/")[-1].split(".")[0]
