@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO,
                     filename='logs/fab.log',
                     filemode='a')
 import config
-from config import USER,private_key,HOST
+from config import USER,private_key,HOST,TEMP_DIR
 env.user = USER
 env.key_filename = private_key
 env.hosts = [HOST,]
@@ -24,8 +24,8 @@ def get_frames():
         key = bucket.get_key(v)
         name = v.split("/")[-1].split(".")[0]
         url = key.generate_url(expires_in=600)
-        time.sleep(5)
-        command = 'ffmpeg -ss 60 -to 600 -i "{}" -vf fps=1/60 temp/{}.%04d.png'.format(url,name)
+        key.get_contents_to_file("{}/temp.mp4".format(TEMP_DIR))
+        command = 'ffmpeg  -i "{}/temp.mp4" -vf fps=1/60 -ss 60 -to 600 temp/{}.%04d.png'.format(TEMP_DIR,name)
         print command
         os.system(command)
 
