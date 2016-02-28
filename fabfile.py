@@ -24,7 +24,8 @@ def get_frames():
         key = bucket.get_key(v)
         name = v.split("/")[-1].split(".")[0]
         url = key.generate_url(expires_in=600)
-        key.get_contents_to_file("{}/temp.mp4".format(TEMP_DIR))
+        with open("{}/temp.mp4".format(TEMP_DIR),'w') as fh:
+            key.get_contents_to_file(fh)
         command = 'ffmpeg  -i "{}/temp.mp4" -vf fps=1/60 -ss 60 -to 600 temp/{}.%04d.png'.format(TEMP_DIR,name)
         print command
         os.system(command)
