@@ -18,19 +18,19 @@ s3_connection = boto.connect_s3()
 
 @task
 def get_frames():
-    os.system("rm temp/keep")
     bucket = s3_connection.get_bucket(config.BUCKETNAME)
     videos = [line.strip().split(" ")[-1] for line in file("data/videos.txt") if line.strip().endswith(".mp4")]
     for i,v in enumerate(videos):
         key = bucket.get_key(v)
-        name = v.split("/")[-1].split(".")[0]
-        # url = key.generate_url(expires_in=600)
+        name = v.split("/")[-1].split(".")[0]        # url = key.generate_url(expires_in=600)
         with open("{}/temp.mp4".format(TEMP_DIR),'w') as fh:
             key.get_contents_to_file(fh) # ,headers={'Range' : 'bytes=0-100240'}
         for i in range(60):
-            command = 'ffmpeg -accurate_seek -ss {} -i {}temp.mp4   -frames:v 1 temp/{}.{}.png'.format(60.0*i,TEMP_DIR,name,i)
+            command = 'ffmpeg -accurate_seek -ss {} -i {}temp.mp4   -frames:v 1 temp/{}.{}.jpg'.format(15.0*i,TEMP_DIR,name,i)
             print command
-            os.system(command)
+            retval = os.system(command)
+            if retval != 0:
+                break
         os.system('cd temp;aws s3 mv . s3://{}/frames/dataset/ --recursive --storage-class "REDUCED_REDUNDANCY"'.format(config.BUCKETNAME))
 
 @task
@@ -52,4 +52,12 @@ def connect():
     fh = open("connect.sh",'w')
     fh.write("#!/bin/bash\n"+"ssh -i "+env.key_filename+" "+"ubuntu"+"@"+HOST+"\n")
     fh.close()
+
+
+@task
+def install_ffmpeg():
+    sudo("add-apt-repository ppa:kirillshkrogalev/ffmpeg-next")
+    sudo("apt-get update")
+    sudo("apt-get install ffmpeg")
+
 

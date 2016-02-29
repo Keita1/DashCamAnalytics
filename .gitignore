@@ -57,4 +57,5 @@ docs/_build/
 # PyBuilder
 target/
 
+/appcode/static/resources
 # Created by .ignore support plugin (hsz.mobi)
