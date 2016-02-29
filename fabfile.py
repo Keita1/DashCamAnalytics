@@ -19,6 +19,10 @@ s3_connection = boto.connect_s3()
 @task
 def get_frames():
     bucket = s3_connection.get_bucket(config.BUCKETNAME)
+    try:
+        os.mkdir("{}/temp".format(TEMP_DIR))
+    except:
+        pass
     videos = [line.strip().split(" ")[-1] for line in file("data/videos.txt") if line.strip().endswith(".mp4")]
     for i,v in enumerate(videos):
         key = bucket.get_key(v)
@@ -26,12 +30,12 @@ def get_frames():
         with open("{}/temp.mp4".format(TEMP_DIR),'w') as fh:
             key.get_contents_to_file(fh) # ,headers={'Range' : 'bytes=0-100240'}
         for i in range(60):
-            command = 'ffmpeg -accurate_seek -ss {} -i {}temp.mp4   -frames:v 1 temp/{}.{}.jpg'.format(15.0*i,TEMP_DIR,name,i)
+            command = 'ffmpeg -accurate_seek -ss {} -i {}/temp.mp4   -frames:v 1 {}/temp/{}.{}.jpg'.format(15.0*i,TEMP_DIR,TEMP_DIR,name,i)
             print command
             retval = os.system(command)
             if retval != 0:
                 break
-        os.system('cd temp;aws s3 mv . s3://{}/frames/dataset/ --recursive --storage-class "REDUCED_REDUNDANCY"'.format(config.BUCKETNAME))
+        os.system('cd {}/temp;aws s3 mv . s3://{}/frames/dataset/ --recursive --storage-class "REDUCED_REDUNDANCY"'.format(TEMP_DIR,config.BUCKETNAME))
 
 @task
 def server(rlocal=False):
