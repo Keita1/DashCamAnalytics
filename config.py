@@ -1,5 +1,6 @@
 import sys
 BUCKETNAME = "aub3cardata"
+DBNAME = "CarAnalytics"
 PREFIX = "test"
 USER = "ubuntu"
 HOST = "52.87.246.161"

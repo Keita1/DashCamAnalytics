@@ -65,3 +65,6 @@ def install_ffmpeg():
     sudo("apt-get install ffmpeg")
 
 
+@task
+def db():
+    pass
