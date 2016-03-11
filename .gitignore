@@ -55,6 +55,7 @@ coverage.xml
 docs/_build/
 
 # PyBuilder
+/models
 target/
 
 /appcode/static/resources

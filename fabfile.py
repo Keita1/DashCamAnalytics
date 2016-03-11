@@ -37,6 +37,9 @@ def get_frames():
                 break
         os.system('cd {}/temp;aws s3 mv . s3://{}/frames/dataset/ --recursive --storage-class "REDUCED_REDUNDANCY"'.format(TEMP_DIR,config.BUCKETNAME))
 
+
+
+
 @task
 def server(rlocal=False):
     """
@@ -59,12 +62,57 @@ def connect():
 
 
 @task
-def install_ffmpeg():
+def setup():
+    """
+    Task for initial set up of AWS instance.
+    """
+    sudo("chmod 777 /mnt/")
     sudo("add-apt-repository ppa:kirillshkrogalev/ffmpeg-next")
     sudo("apt-get update")
-    sudo("apt-get install ffmpeg")
+    sudo("apt-get install -y ffmpeg")
+    sudo("apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927")
+    sudo('echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list')
+    sudo('apt-get update')
+    sudo('apt-get install -y mongodb-org')
+    try:
+        sudo('service mongod start')
+    except:
+        pass
+    try:
+        run("rm -rf DashCamAnalytics")
+    except:
+        pass
+    run("git clone https://github.com/AKSHAYUBHAT/DashCamAnalytics")
+    with cd("DashCamAnalytics/appcode/db/dump/visiondb"):
+        run("gzip -d *")
+    run("mongorestore --db visiondb VisualSearchServer/appcode/db/dump/visiondb")
+
 
 
 @task
-def db():
-    pass
+def backup_db():
+    with lcd("appcode/db"):
+        local("rm -rf dump")
+        local("mongodump --db visiondb")
+
+
+@task
+def get_videos():
+    with cd("/mnt/video"):
+        run('youtube-dl "https://www.youtube.com/playlist?list=PLccnpqMfP0kwx4qaj1ZZw9YJtTOptmBJJ" -o "%(epoch)s.%(ext)s" --ignore-errors')
+
+@task
+def get_frames():
+    videos = """
+    """
+    for i,v in enumerate(videos.strip().split("\n")):
+        v = v.strip()
+        if v:
+            for i in range(500):
+                command = 'ffmpeg -accurate_seek -ss {} -i /mnt/video/{}   -frames:v 1 /mnt/frames/{}.{}.jpg'.format(15.0*i,v,v,i)
+                retval = run(command)
+                if retval.return_code != 0:
+                    break
+            run('cd /mnt/frames;aws s3 mv . s3://aub3data/nyc/frames/ --recursive --storage-class "REDUCED_REDUNDANCY"')
+            run('cd /mnt/video/;aws s3 mv {} s3://aub3data/nyc/videos/ --storage-class "REDUCED_REDUNDANCY"'.format(v))
+
